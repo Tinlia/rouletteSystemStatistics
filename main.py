@@ -12,7 +12,7 @@ name = ""
 
 twelves = {'1st12': '0', '2nd12': '0', '3rd12': '0'}
 
-register = {'dalambertUp1Down1': [], 'dalambertUp1Down2': [], 'dalambertUp1Down3': [], 'doubleDown': []}
+register = {'dalambertUp1Down1': [], 'dalambertUp1Down2': [], 'dalambertUp1Down3': [], 'doubleDown': [], 'fibbonacci': [], 'evans': []}
 
 for item in history:
     if item == '1st12':
@@ -57,7 +57,6 @@ def showGambitStats():
             
 
 def spin(bal, amount, bet_value):
-    print(f"Spinning the wheel with a bet of ${amount} on {bet_value}! Current Balance is ${bal}.")
     # Subtract amount from balance
     bal -= amount
     # Roll a random choice from the squares dict
@@ -86,7 +85,7 @@ def spin(bal, amount, bet_value):
         elif bet_value in square_types[9:]:
             bal += 36*amount
         else: print("I don't even know how this would happen")
-        print("You've won!")
+        #print("You've won!")
     return bal
 
 def testDalambert(down, spins, bet, balance):
@@ -95,7 +94,7 @@ def testDalambert(down, spins, bet, balance):
     max_balance = balance
     for i in range(1, spins+1):
         top_twelve = max(twelves, key=twelves.get)
-        balance = spin(balance, bet, top_twelve)
+        balance = spin(balance, bet, '2nd12')
         if balance < 10*down:
             print(f"You've gone bankrupt on spin {i}.")
             break
@@ -103,7 +102,7 @@ def testDalambert(down, spins, bet, balance):
         # If you won, subtract 10 from bet
         if balance > old_balance:
             bet -= (10*down) if bet > (10*down) else 0 # if not back to start, add ten * down amount
-            print(f"You've won! Bet is now {bet} and balance is {balance}.")
+            # print(f"You've won! Bet is now {bet} and balance is {balance}.")
             won = 1
 
         # If you lost, add 10 to bet
@@ -130,7 +129,6 @@ def testDoubleDown(spins, baseBet, balance):
     for i in range(1, spins+1):
         balance = spin(balance, bet, 'even')
         if balance < baseBet:
-            print(f"You've gone bankrupt on spin {i}.")
             break
 
         # If you can't afford the bet, go back to baseBet
@@ -140,7 +138,6 @@ def testDoubleDown(spins, baseBet, balance):
         # If you won, go back to old bet
         if balance > old_balance:
             bet = baseBet
-            print(f"You've won! Bet is now {bet} and balance is {balance}.")
             old_balance = balance
             won = 1
 
@@ -155,6 +152,42 @@ def testDoubleDown(spins, baseBet, balance):
     
     # Add iteration details to register
     register['doubleDown'].append(registerHold)
+    with open('playerfile.txt', 'w') as player_file:
+        player_file.write(f"{name}\n{balance}\n{wins}\n{' '.join(history)}")
+
+def testFibbonacci(spins, baseBet, balance):
+    old_balance = balance
+    registerHold = []
+    max_balance = balance
+    bet = baseBet
+    previousbet = baseBet
+    for i in range(1, spins+1):
+        
+        balance = spin(balance, bet, '2nd12')
+        if balance < baseBet:
+            break
+
+        # If you can't afford the bet, go back to baseBet
+        if bet > balance:
+            bet = baseBet
+
+        # If you won, go back to old bet
+        if balance > old_balance:
+            bet = baseBet
+            won = 1
+            
+
+        # If you lost, add the previous bet to your current bet
+        elif balance < old_balance:
+            bet += previousbet
+            won = 0
+
+        previousbet = bet
+        registerHold.append([i, balance, won, max(max_balance, balance)]) # Spin no., balance, win/lose, max
+        old_balance = balance
+    
+    # Add iteration details to register
+    register['fibbonacci'].append(registerHold)
     with open('playerfile.txt', 'w') as player_file:
         player_file.write(f"{name}\n{balance}\n{wins}\n{' '.join(history)}")
 
@@ -187,7 +220,10 @@ while True:
             "[A] dAlembert System (up 1 down 1)\n",
             "[B] dAlembert System (up 1 down 2)\n",
             "[C] dAlembert System (up 1 down 3)\n",
-            "[D] Double Down System (Double on loss)\n")
+            "[D] Double Down System (Double on loss)\n",
+            "[E] Evans System\n",
+            "[F] Fibbonacci System\n")
+
         system = input("> ").upper()
         
         if system.upper() == 'A' or system.upper() == 'B' or system.upper() == 'C':
@@ -224,12 +260,10 @@ while True:
             if check != 'Y':
                 continue
             for iter in register[system]: # For each iteration
-                print(f"Plotting Iteration...")
                 x = []; y=[]
                 for spinNo in iter: # For each spin
                     x.append(spinNo[0])
                     y.append(spinNo[1])
-                    print(f"\tPlotting ({spinNo[0]}, {spinNo[1]})")
                 plt.plot(x,y)
             plt.title(f"The {system} system")
             plt.xlabel("Spin Number")
