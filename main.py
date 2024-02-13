@@ -9,6 +9,7 @@ temphist = ""
 top_twelve = '1st12'
 last_bet = 10
 name = ""
+num = ""
 
 twelves = {'1st12': '0', '2nd12': '0', '3rd12': '0'}
 
@@ -175,7 +176,6 @@ def testFibbonacci(spins, baseBet, balance):
         if balance > old_balance:
             bet = baseBet
             won = 1
-            
 
         # If you lost, add the previous bet to your current bet
         elif balance < old_balance:
@@ -188,6 +188,37 @@ def testFibbonacci(spins, baseBet, balance):
     
     # Add iteration details to register
     register['fibbonacci'].append(registerHold)
+    with open('playerfile.txt', 'w') as player_file:
+        player_file.write(f"{name}\n{balance}\n{wins}\n{' '.join(history)}")
+
+# Test Evans System
+def testEvans(spins, baseBet, balance):
+    old_balance = balance
+    registerHold = []
+    max_balance = balance
+    bet = baseBet
+    previousColour = 'red'
+    for i in range(1, spins+1):
+        numColor = squares[num][0]
+        bet = 0 if numColor == previousColour else baseBet # Bet only when the colour changes
+        balance = spin(balance, bet, 'red' if squares[num][0] == 'black' else 'black')
+        
+        if balance < baseBet:
+            break
+
+        # If you won
+        if balance > old_balance:
+            won = 1
+
+        # If you lost
+        elif balance < old_balance:
+            won = 0
+        max_balance = max(max_balance, balance)
+        registerHold.append([i, balance, won, max_balance]) # Spin no., balance, win/lose
+        old_balance = balance
+    
+    # Add iteration details to register
+    register['evans'].append(registerHold)
     with open('playerfile.txt', 'w') as player_file:
         player_file.write(f"{name}\n{balance}\n{wins}\n{' '.join(history)}")
 
