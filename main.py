@@ -6,24 +6,32 @@ from systems.testDalambert import testDalambert
 from systems.testEvans import testEvans
 
 # Title Screen
-def plotResults(balance):
+def plotResults(balance, spins, simulations):
     from matplotlib import pyplot as plt
     from genStats import register
 
     for system in register:
-        if register[system] == []:
-            continue
-        if input(f"Plot {system} system? (Y/N)").upper() != 'Y':
-            continue
+        xyAvg = {
+            'x': [i for i in range(1, spins+1)],
+            'y': [[] for i in range(1, spins+2)]
+        }
+
+        if register[system] == []: continue
+        if input(f"Plot {system} system? (Y/N)").upper() != 'Y': continue
+            
         for sim in register[system]: # For each simulation
-            x = [0]; y=[balance]
-            for spinNo in sim: # For each spin
-                x.append(spinNo[0])
-                y.append(spinNo[1])
-            plt.plot(x,y)
-        plt.title(f"The {system} system")
+            x = [0]; y=[balance];
+            for spin in sim: # For each spin
+                x.append(spin[0]); y.append(spin[1])
+                xyAvg["y"][spin[0]].append(spin[1])
+            plt.scatter(x,y, color='blue', s=0.2)
+
+        plt.plot(xyAvg['x'], [sum(xyAvg['y'][i])/simulations for i in range(1, spins+1)], color='red', label='Average')
+        plt.title(f"{system} system")
         plt.xlabel("Spin Number")
         plt.ylabel("Balance")
+        plt.legend()
+        plt.grid(axis='y', which='both')
         plt.show()
 
 while True:
@@ -72,42 +80,31 @@ while True:
             input("[Press Enter to continue...]")
 
     elif selection == 'S': showGambitStats()
-        
-    elif selection == 'P':
-        plotResults(balance)
-
+    elif selection == 'P': plotResults(balance)
     elif selection == 'T':
         print("Running Test Cases...")
-        [spins, bet, balance, simulations, showPrints] = [100, 10, 1000, 100, False]
+        # Suggested Test Cases:
+        test  = [100,  10, 10000, 10000]
+        testA = [100,  10,  1000, 1000]
+        testB = [200,  10,  2000, 1000]
+        testC = [100,   1,   100, 1000]
+        testD = [100,   2,   100, 1000]
+        testE = [100, 100,  1000, 1000]
+        [spins, bet, balance, simulations] = test
         for i in range(simulations):
-            if showPrints: print("[1/6] dAlembert System (1:1)")
             testDalambert(1, spins, bet, balance)
-
-            if showPrints: print("[2/6] dAlembert System (1:2)")
             testDalambert(2, spins, bet, balance)
-
-            if showPrints: print("[3/6] dAlembert System (1:3)")
             testDalambert(3, spins, bet, balance)
-
-            if showPrints: print("[4/6] Double Down System")
             testDoubleDown(spins, bet, balance)
-
-            if showPrints: print("[5/6] Evans System")
             testEvans(spins, bet, balance)
-
-            if showPrints: print("[6/6] Fibbonacci System")
             testFibbonacci(spins, bet, balance)
-
-        if showPrints: print("Displaying Stats...")
         showGambitStats()
-
-        if showPrints: print("Plotting Results...")
-        plotResults(balance)
+        plotResults(balance, spins, simulations)
 
     elif selection == 'E':
         print("Thank you for playing!")
         break
 
     else:
-        print("Invalid Selection.\n")
+        print("\n\n\n\nInvalid Selection.\n")
         input("[Press Enter to continue...]")
