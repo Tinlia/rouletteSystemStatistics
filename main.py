@@ -15,9 +15,9 @@ def plotResults(balance):
             continue
         if input(f"Plot {system} system? (Y/N)").upper() != 'Y':
             continue
-        for iter in register[system]: # For each iteration
+        for sim in register[system]: # For each simulation
             x = [0]; y=[balance]
-            for spinNo in iter: # For each spin
+            for spinNo in sim: # For each spin
                 x.append(spinNo[0])
                 y.append(spinNo[1])
             plt.plot(x,y)
@@ -27,8 +27,7 @@ def plotResults(balance):
         plt.show()
 
 while True:
-    print(f"\n\n\n\nBalance: $Null\n")
-    print("Please Select an option below:\n",
+    print("\n\n\n\nPlease Select an option below:\n",
           "[R]un Tests\n",
           "[S]ystem Stats\n",
           "[P]lot Results\n",
@@ -53,9 +52,9 @@ while True:
             spins = int(input(f"dAlembert System (up 1 down {down}) selected. How many spins?\n> "))
             balance = int(input("What is your starting balance?\n> "))
             bet = int(input("What is your starting bet?\n> "))
-            iterations = int(input("How many iterations?\n> "))
+            simulations = int(input("How many simulations?\n> "))
             
-            for i in range(iterations):
+            for i in range(simulations):
                 testDalambert(down, spins, bet, balance)
             
         elif system.upper() == 'D' or system.upper() == 'E' or system.upper() == 'F': 
@@ -64,8 +63,8 @@ while True:
             spins = int(input(f"System selected. How many spins?\n> "))
             balance = int(input("What is your starting balance?\n> "))
             bet = int(input("What is your starting bet?\n> "))
-            iterations = int(input("How many iterations?\n> "))
-            for i in range(iterations):
+            simulations = int(input("How many simulations?\n> "))
+            for i in range(simulations):
                 testType(spins, bet, balance)
 
         else:
@@ -79,8 +78,8 @@ while True:
 
     elif selection == 'T':
         print("Running Test Cases...")
-        [spins, bet, balance, iterations, showPrints] = [100, 10, 1000, 100, False]
-        for i in range(iterations):
+        [spins, bet, balance, simulations, showPrints] = [100, 10, 1000, 100, False]
+        for i in range(simulations):
             if showPrints: print("[1/6] dAlembert System (1:1)")
             testDalambert(1, spins, bet, balance)
 
