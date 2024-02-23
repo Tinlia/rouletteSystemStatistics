@@ -31,6 +31,6 @@ def testEvans(spins, baseBet, balance, num = '1'):
         registerHold.append([i, balance, won, max_balance]) # Spin no., balance, win/lose
         old_balance = balance
     
-    # Add iteration details to register
+    # Add simulation details to register
     register['evans'].append(registerHold)
     

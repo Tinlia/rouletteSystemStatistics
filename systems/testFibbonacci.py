@@ -31,6 +31,6 @@ def testFibbonacci(spins, baseBet, balance):
         registerHold.append([i, balance, won, max(max_balance, balance)]) # Spin no., balance, win/lose, max
         old_balance = balance
     
-    # Add iteration details to register
+    # Add simulation details to register
     register['fibbonacci'].append(registerHold)
     

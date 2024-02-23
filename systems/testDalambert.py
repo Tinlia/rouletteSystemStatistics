@@ -30,5 +30,5 @@ def testDalambert(downAmount, spins, startingBet, start, twelve = '2nd12'):
         registerHold.append([i, balance, won, max_balance]) # Spin no.,  balance, win/lose, max
         old_balance = balance
     
-    # Add iteration details to register
+    # Add simulation details to register
     register[f'dalambertUp1Down{down}'].append(registerHold)

@@ -30,6 +30,6 @@ def testDoubleDown(spins, baseBet, balance):
         registerHold.append([i, balance, won, max_balance]) # Spin no., balance, win/lose
         old_balance = balance
     
-    # Add iteration details to register
+    # Add simulation details to register
     register['doubleDown'].append(registerHold)
     
