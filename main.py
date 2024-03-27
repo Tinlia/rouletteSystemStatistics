@@ -3,20 +3,51 @@ from genStats import showGambitStats
 from systems.testFibbonacci import testFibbonacci
 from systems.testDoubleDown import testDoubleDown
 from systems.testDalambert import testDalambert
-from systems.testEvans import testEvans
+from obscureSystems.testEvans import testEvans
+from obscureSystems.testThirdsFallacy import testThirds
+
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    suffix = f"({iteration}/{total} Simulations)"
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
 
 # Title Screen
-def plotResults(balance, spins, simulations):
+def plotResults(balance):
     from matplotlib import pyplot as plt
     from genStats import register
 
     for system in register:
+        # Skip empty systems
+        if register[system] == []: continue
+
+        # Get the longest simulation (spins) and the number of simulations
+
+        spins = max([len(sim) for sim in register[system]])
+        simulations = len(register[system])
+
+        # Fetch the avergae line
         xyAvg = {
             'x': [i for i in range(1, spins+1)],
             'y': [[] for i in range(1, spins+2)]
         }
 
-        if register[system] == []: continue
         if input(f"Plot {system} system? (Y/N)").upper() != 'Y': continue
             
         for sim in register[system]: # For each simulation
@@ -51,29 +82,55 @@ while True:
             "[C] dAlembert System (up 1 down 3)\n",
             "[D] Double Down System (Double on loss)\n",
             "[E] Evans System\n",
-            "[F] Fibbonacci System\n")
+            "[F] Fibbonacci System\n",
+            "[G] Thirds Fallacy System")
 
         system = input("> ").upper()
+
+        # Basic system dictionary
+        syst = {
+            'A' : 1,
+            'B' : 2,
+            'C' : 3,
+            'D' : testDoubleDown,
+            'E' : testEvans,
+            'F' : testFibbonacci,
+            'G' : testThirds
+        }
+
         
-        if system.upper() == 'A' or system.upper() == 'B' or system.upper() == 'C':
-            down = 1 if system.upper() == 'A' else 2 if system.upper() == 'B' else 3
+        if system.upper() in ['A', 'B', 'C']:
+            down = syst[system.upper()]
             spins = int(input(f"dAlembert System (up 1 down {down}) selected. How many spins?\n> "))
             balance = int(input("What is your starting balance?\n> "))
             bet = int(input("What is your starting bet?\n> "))
             simulations = int(input("How many simulations?\n> "))
             
             for i in range(simulations):
-                testDalambert(down, spins, bet, balance)
+                testDalambert(down, spins, bet, balance)        
             
-        elif system.upper() == 'D' or system.upper() == 'E' or system.upper() == 'F': 
+        elif system.upper() in ['D', 'E', 'F']: 
             
-            testType = testDoubleDown if system.upper() == 'D' else testEvans if system.upper() == 'E' else testFibbonacci
+            testType = syst[system.upper()]
             spins = int(input(f"System selected. How many spins?\n> "))
             balance = int(input("What is your starting balance?\n> "))
             bet = int(input("What is your starting bet?\n> "))
             simulations = int(input("How many simulations?\n> "))
+
+            # Run simulations
             for i in range(simulations):
                 testType(spins, bet, balance)
+
+        elif system.upper() == 'G':
+            down = int(input("Thirds Fallacy System selected. What is your down multiplier (Up 1 down n)?\n> "))
+            spins = int(input("How many spins?\n> "))
+            balance = int(input("What is your starting balance?\n> "))
+            bet = int(input("What is your starting bet?\n> "))
+            simulations = int(input("How many simulations?\n> "))
+            
+            for i in range(simulations):
+                testThirds(down, spins, bet, balance)
+
 
         else:
             print("Invalid Selection.\n")
@@ -84,22 +141,30 @@ while True:
     elif selection == 'T':
         print("Running Test Cases...")
         # Suggested Test Cases:
-        test  = [100,  10, 10000, 10000]
-        testA = [100,  10,  1000, 1000]
-        testB = [200,  10,  2000, 1000]
-        testC = [100,   1,   100, 1000]
-        testD = [100,   2,   100, 1000]
-        testE = [100, 100,  1000, 1000]
+        #       [spins, bet, balance, simulations]
+        test  = [100,    10,   10000,    250]
+        # test = [100,    10,    1000,     1000]
+        # test = [200,    10,    2000,     1000]
+        # test = [100,     1,     100,     1000]
+        # test = [100,     2,     100,     1000]
+        # test = [100,   100,    1000,     1000]
+
         [spins, bet, balance, simulations] = test
         for i in range(simulations):
-            testDalambert(1, spins, bet, balance)
-            testDalambert(2, spins, bet, balance)
-            testDalambert(3, spins, bet, balance)
-            testDoubleDown(spins, bet, balance)
-            testEvans(spins, bet, balance)
-            testFibbonacci(spins, bet, balance)
+            printProgressBar(i, simulations)
+            #testDalambert(1, spins, bet, balance)
+            #testDalambert(2, spins, bet, balance)
+            #testDalambert(3, spins, bet, balance)
+            #testDoubleDown(spins, bet, balance)
+            #testEvans(spins, bet, balance)
+            #testFibbonacci(spins, bet, balance)
+            testThirds(1, spins, bet, balance)
+
         showGambitStats()
-        plotResults(balance, spins, simulations)
+        plotResults(balance)
+
+
+    
 
     elif selection == 'E':
         print("Thank you for playing!")
@@ -108,3 +173,4 @@ while True:
     else:
         print("\n\n\n\nInvalid Selection.\n")
         input("[Press Enter to continue...]")
+
