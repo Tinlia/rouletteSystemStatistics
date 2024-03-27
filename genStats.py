@@ -1,4 +1,4 @@
-register = {'dalambertUp1Down1': [], 'dalambertUp1Down2': [], 'dalambertUp1Down3': [], 'doubleDown': [], 'fibbonacci': [], 'evans': []}
+register = {'dalambertUp1Down1': [], 'dalambertUp1Down2': [], 'dalambertUp1Down3': [], 'doubleDown': [], 'fibbonacci': [], 'evans': [], 'thirdsFallacy': []}
 
 def showGambitStats():
     for system in register: # For each system type
