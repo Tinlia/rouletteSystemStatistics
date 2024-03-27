@@ -1,7 +1,7 @@
 import random
 from dicts import squares, square_types
 
-def spin(bal, amount, bet_value):
+def spin(bal = 0, amount = 0, bet_value = "1"):
     # Subtract amount from balance
     bal -= amount
     # Roll a random choice from the squares dict
