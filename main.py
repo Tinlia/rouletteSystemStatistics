@@ -35,27 +35,33 @@ def plotResults(balance):
 
     for system in register:
         # Skip empty systems
-        if register[system] == []: continue
-
+        if register[system].isEmpty(): continue
         # Get the longest simulation (spins) and the number of simulations
-
-        spins = max([len(sim) for sim in register[system]])
-        simulations = len(register[system])
+        simulations = register[system].length()
+        curr = register[system].head
+        maxSpins = 0
+        while curr is not None:
+            maxSpins = max(len(curr.data), maxSpins)
+            curr = curr.next
 
         # Fetch the avergae line
         xyAvg = {
-            'x': [i for i in range(1, spins+1)],
-            'y': [[] for i in range(1, spins+2)]
+            'x': [i for i in range(1, maxSpins+1)],
+            'y': [[] for i in range(1, maxSpins+2)]
         }
 
         if input(f"Plot {system} system? (Y/N)").upper() != 'Y': continue
-            
-        for sim in register[system]: # For each simulation
+        
+        curr = register[system].head
+
+        while curr is not None:
             x = [0]; y=[balance];
-            for spin in sim: # For each spin
+            for spin in curr.data: # For each spin
                 x.append(spin[0]); y.append(spin[1])
                 xyAvg["y"][spin[0]].append(spin[1])
-            plt.scatter(x,y, color='blue', s=0.2)
+
+            plt.scatter(x,y, color='blue', s=1, alpha=0.01)
+            curr = curr.next
 
         plt.plot(xyAvg['x'], [sum(xyAvg['y'][i])/simulations for i in range(1, spins+1)], color='red', label='Average')
         plt.title(f"{system} system")
@@ -140,14 +146,8 @@ while True:
     elif selection == 'P': plotResults(balance)
     elif selection == 'T':
         print("Running Test Cases...")
-        # Suggested Test Cases:
         #       [spins, bet, balance, simulations]
-        test  = [100,    10,   10000,    250]
-        # test = [100,    10,    1000,     1000]
-        # test = [200,    10,    2000,     1000]
-        # test = [100,     1,     100,     1000]
-        # test = [100,     2,     100,     1000]
-        # test = [100,   100,    1000,     1000]
+        test = [300,    10,    1000,     1000]
 
         [spins, bet, balance, simulations] = test
         for i in range(simulations):
@@ -159,7 +159,7 @@ while True:
             #testEvans(spins, bet, balance)
             #testFibbonacci(spins, bet, balance)
             testThirds(1, spins, bet, balance)
-
+        printProgressBar(simulations, simulations)
         showGambitStats()
         plotResults(balance)
 
